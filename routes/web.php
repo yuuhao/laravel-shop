@@ -13,12 +13,16 @@
 
 Route::get('/', 'PagesController@root')->name('root');
 Auth::routes();
+// 将这路由放到auth 中间件里。因为只有登陆的用户才可看到
+Route::group(['middleware' => 'auth'],function (){
+    Route::get('/email_verify_notice','PagesController@emailVerifyNotice')->name('email_verify_notice');
+
+    Route::group(['middleware' => 'email_verified'],function (){
+        Route::get('/test',function(){
+            return 'you email is verfied';
+        });
+    });
+});
 
 
-Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
