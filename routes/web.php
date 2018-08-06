@@ -16,11 +16,11 @@ Auth::routes();
 // 将这路由放到auth 中间件里。因为只有登陆的用户才可看到
 Route::group(['middleware' => 'auth'],function (){
     Route::get('/email_verify_notice','PagesController@emailVerifyNotice')->name('email_verify_notice');
+    Route::get('/email_verification/verify', 'EmailVerificationController@verify')->name('email_verification.verify');
+    Route::get('/email_verification/send', 'EmailVerificationController@send')->name('email_verification.send');
 
     Route::group(['middleware' => 'email_verified'],function (){
-        Route::get('/test',function(){
-            return 'you email is verfied';
-        });
+
     });
 });
 
