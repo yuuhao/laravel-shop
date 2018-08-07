@@ -11,7 +11,8 @@
 |
 */
 
-Route::get('/', 'PagesController@root')->name('root');
+Route::redirect('/', '/products')->name('root');
+Route::get('products','ProductsController@index');
 Auth::routes();
 // 将这路由放到auth 中间件里。因为只有登陆的用户才可看到
 Route::group(['middleware' => 'auth'],function (){
