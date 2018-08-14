@@ -79,7 +79,6 @@
 
                 axios.post('{{ route('products.favor' ,['product' => $product->id] )}}')
                     .then(function () { // 请求成功会执行这个回掉
-                        alert('操作成功');
                         location.reload();
                     },function(error){
                         if(error.response && error.response.status === 401){
@@ -95,11 +94,40 @@
             $('.btn-disfavor').click(function(){
                 axios.delete('{{ route('products.disfavor',['product' => $product->id]) }}')
                     .then(function () {
-                        alert('操作成功');
-                        location.reload()
+                       location.reload()
                     })
             })
         });
+
+        $('.btn-add-to-cart').click(function () {
+            axios.post('{{ route('cart.add') }}' , {
+                sku_id : $('label.active input[name=skus]').val(),
+                amount: $('.cart_amount input').val()
+            })
+                .then(function () {
+                    alert('加入购物车成功');
+                    location.href = '{{ route('cart.index') }}';
+                },function(error){
+                    if(error.response.status === 401){
+                        alert('请先登录')
+                    }else if( error.response.status === 422){
+                        // http 状态码为 422 代表用户输入校验失败
+                        var html = '<div>';
+                        _.each(error.response.data.errors,function(errors){
+                            _.each(errors,function(error){
+                                 alert(error);
+                                 return ;
+                                // html+= error + '<br/>';
+                            })
+                        })
+
+                        html += '</div>';
+
+                    }else{
+                        alert('系统错误')
+                    }
+                })
+        })
     </script>
 @endsection
 
