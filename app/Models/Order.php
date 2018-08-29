@@ -81,7 +81,7 @@ class Order extends Model
     public function items(){
         return $this->hasMany(OrderItem::class);
     }
-    public function findAvailableNo(){
+    public static function findAvailableNo(){
         // 订单流水前缀
         $prefix = date('YmdHis');
         for ($i = 1; $i < 10; $i++){

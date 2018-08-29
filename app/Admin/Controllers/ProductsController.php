@@ -95,7 +95,7 @@ class ProductsController extends Controller
             $grid->id('ID')->sortable();
             $grid->title('商品名称');
             $grid->on_sale('已上架')->display(function($value){
-                return $value ? '是' : '否';
+                return $value ? '<span class="label label-info">是</span>' : '<span class="label label-danger">否</span>';
             });
             $grid->price('价格');
             $grid->rating('评分');

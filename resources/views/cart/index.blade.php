@@ -52,6 +52,31 @@
                         </tbody>
                     </table>
                 </div>
+                <div>
+                    <form class="form-horizontal" role="form" id="order-form">
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">选择收货地址</label>
+                            <div class="col-sm-9 col-md-7">
+                                <select class="form-control" name="address">
+                                    @foreach($addresses as $address)
+                                        <option value="{{ $address->id }}">{{ $address->full_address }} {{ $address->contact_name }} {{ $address->contact_phone }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">备注</label>
+                            <div class="col-sm-9 col-md-7">
+                                <textarea name="remark" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-3">
+                                <button type="button" class="btn btn-primary btn-create-order">提交订单</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -63,16 +88,70 @@
             $('.btn-remove').click(function(){
                 var sku_id = $(this).closest('tr').data('id');
                 axios.delete('./cart/'+sku_id).then(function(){
-                    location.reload();
+                    swal('移除成功','','error').then(function(){
+                        location.reload();
+                    })
+
                 })
             });
 
             $('#select-all').change(function(){
                 var check = $(this).prop('checked');
-                console.log(check)
                 $('input[name=select][type=checkbox]:not([disabled])').each(function(){
                     $(this).prop('checked',check);
                 })
+            })
+
+            $('.btn-create-order').click(function(){
+                var req = {
+                    address_id:  $('#order-form').find('select[name=address]').val(),
+                    remark:  $('#order-form').find('textarea[name=remark]').val(),
+                    items:[]
+                };
+                // 遍历 <table> 标签内所有带有 data-id 属性的 <tr> 标签，也就是每一个购物车中的商品 SKU
+                $('table tr[data-id]').each(function(){
+
+                    var checkbox = $(this).find('input[name=select][type=checkbox]');
+                    if(!checkbox.prop('checked') || checkbox.prop('disabled')){
+                        return ;
+                    }
+
+                    var $input = $(this).find('input[name=amount]');
+                    if($input.val() == 0 || isNaN($input.val()) ) {
+                        return ;
+                    }
+
+                    req.items.push({
+                        sku_id: $(this).data('id'),
+                        amount: $input.val()
+                    })
+                })
+
+                axios.post('{{route('orders.store')}}',req)
+                    .then(function(response){
+                        swal('订单提交成功', '', 'success').then(function () {
+                            location.reload()
+                        });
+
+                    },function(error){
+                        //验证信息错误
+                        if(error.response.status === 422 ){
+
+                            // http 状态码为 422 代表用户输入校验失败
+                            var html = '<div>';
+                            _.each(error.response.data.errors, function (errors) {
+                                _.each(errors, function (error) {
+                                    html += error+'<br>';
+                                })
+                            });
+                            html += '</div>';
+                            swal({content: $(html)[0], icon: 'error'})
+
+                        }else{
+                            swal('系统错误', '', 'error');
+                        }
+                    })
+
             })
 
          });

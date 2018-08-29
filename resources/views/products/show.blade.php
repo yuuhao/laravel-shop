@@ -79,14 +79,16 @@
 
                 axios.post('{{ route('products.favor' ,['product' => $product->id] )}}')
                     .then(function () { // 请求成功会执行这个回掉
-                        location.reload();
+                        swal('操作成功', '', 'success').then(function(){
+                            location.reload()
+                        });
                     },function(error){
                         if(error.response && error.response.status === 401){
-                            alert('请先登录');
+                            swal('请先登录','','error');
                         } else if(error.response && error.response.data.msg){
-                            alert(error.response.data.msg);
+                            swal(error.response.data.msg,'error');
                         } else{
-                            alert('系统错误');
+                            swal('系统错误','','error');
                         }
                     });
             });
@@ -94,7 +96,9 @@
             $('.btn-disfavor').click(function(){
                 axios.delete('{{ route('products.disfavor',['product' => $product->id]) }}')
                     .then(function () {
-                       location.reload()
+                       swal('操作成功','','success').then(function(){
+                           location.reload()
+                       })
                     })
             })
         });
@@ -105,26 +109,24 @@
                 amount: $('.cart_amount input').val()
             })
                 .then(function () {
-                    alert('加入购物车成功');
-                    location.href = '{{ route('cart.index') }}';
+                    swal('加入购物车成功', '', 'success').then(function () {
+                        location.href = '{{ route('cart.index') }}';
+                    });
                 },function(error){
                     if(error.response.status === 401){
-                        alert('请先登录')
+                        swal('请先登录','','error')
                     }else if( error.response.status === 422){
                         // http 状态码为 422 代表用户输入校验失败
                         var html = '<div>';
                         _.each(error.response.data.errors,function(errors){
                             _.each(errors,function(error){
-                                 alert(error);
-                                 return ;
-                                // html+= error + '<br/>';
+                                html+= error + '<br/>';
                             })
                         })
-
                         html += '</div>';
-
+                        swal({content: $(html)[0], icon: 'error'})
                     }else{
-                        alert('系统错误')
+                        swal('系统错误','','error')
                     }
                 })
         })
