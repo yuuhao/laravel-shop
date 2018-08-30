@@ -88,7 +88,7 @@
             $('.btn-remove').click(function(){
                 var sku_id = $(this).closest('tr').data('id');
                 axios.delete('./cart/'+sku_id).then(function(){
-                    swal('移除成功','','error').then(function(){
+                    swal('移除成功','','success').then(function(){
                         location.reload();
                     })
 
@@ -130,7 +130,8 @@
                 axios.post('{{route('orders.store')}}',req)
                     .then(function(response){
                         swal('订单提交成功', '', 'success').then(function () {
-                            location.reload()
+                             location.href = '/orders/' + response.data.id;
+
                         });
 
                     },function(error){
