@@ -51,6 +51,7 @@ class OrderService{
                 // 将下单的商品从购物车中移除
                 $skuIds = collect($items)->pluck('sku_id')->all();
                 app(CartService::class)->remove($skuIds);
+                return $order;
             });
             // 这里我们直接使用 dispatch 函数
             dispatch(new CloseOrder($order, config('app.order_ttl')));

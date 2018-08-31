@@ -26,7 +26,6 @@ class CartController extends Controller
     //
     ////新增购物车商品sku
     public function add(AddCartRequest $request){
-        $user = Auth::user();
         $skuId = $request->input('sku_id');
         $amount = $request->input('amount');
         $this->carService->add($skuId,$amount);

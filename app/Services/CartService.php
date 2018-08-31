@@ -29,6 +29,6 @@ class CartService{
             $skuIds = [$skuIds];
         }
        // Auth::user()->carItem()->whereIn('product_sku_id',$skuIds)->delete();
-        Auth::user()->cartItem()->distory($skuIds);
+        Auth::user()->cartItem()->first()->destroy($skuIds);
     }
 }
