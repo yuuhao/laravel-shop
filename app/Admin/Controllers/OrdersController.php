@@ -10,6 +10,8 @@ use Encore\Admin\Grid;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
+use App\Exceptions\InvalidRequestException;
 
 class OrdersController extends Controller
 {
@@ -36,55 +38,44 @@ class OrdersController extends Controller
      * @param $id
      * @return Content
      */
-    public function show($id)
+    public function show(Order $order)
     {
-        return Admin::content(function (Content $content) use ($id) {
+        return Admin::content(function (Content $content) use ($order) {
 
-            $content->header('Detail');
-            $content->description('description');
+            $content->header('查看订单');
 
-            $content->body(Admin::show(Order::findOrFail($id), function (Show $show) {
-
-                $show->id();
-
-                $show->created_at();
-                $show->updated_at();
-            }));
+            $content->body(view('admin.orders.show',['order'=>$order]));
         });
     }
 
-    /**
-     * Edit interface.
-     *
-     * @param $id
-     * @return Content
-     */
-    public function edit($id)
-    {
-        return Admin::content(function (Content $content) use ($id) {
+    public function ship(Order $order,Request $request){
+        //判断订单是否支付
+        if(!$order->paid_at){
+            throw new InvalidRequestException('订单未支付');
+        }
 
-            $content->header('Edit');
-            $content->description('description');
+        if(!$order->ship_status){
+            throw new InvalidRequestException('订单已发货');
+        }
 
-            $content->body($this->form()->edit($id));
-        });
+        $data = $this->validate($request, [
+            'express_company' => ['required'],
+            'express_no'      => ['required'],
+        ], [], [
+            'express_company' => '物流公司',
+            'express_no'      => '物流单号',
+        ]);
+
+        $order->update([
+            'ship_status' => Order::SHIP_STATUS_DELIVERED,
+            'ship_data'   => $data
+        ]);
+
+        return redirect()->back();
+
     }
 
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
 
-            $content->header('Create');
-            $content->description('description');
-
-            $content->body($this->form());
-        });
-    }
 
     /**
      * Make a grid builder.
@@ -120,19 +111,4 @@ class OrdersController extends Controller
         });
     }
 
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    protected function form()
-    {
-        return Admin::form(Order::class, function (Form $form) {
-
-            $form->display('id', 'ID');
-
-            $form->display('created_at', 'Created At');
-            $form->display('updated_at', 'Updated At');
-        });
-    }
 }

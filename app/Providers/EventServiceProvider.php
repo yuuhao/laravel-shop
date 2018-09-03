@@ -7,6 +7,8 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use App\Listeners\RegisteredListener;
 use Illuminate\Auth\Events\Registered;
 use App\Listeners\SendOrderPaidMail;
+use App\Events\OrderReviewed;
+use App\Listeners\UpdateProductRating;
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -24,7 +26,10 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\OrderPaid' => [
             'App\Listeners\UpdateProductSoldCount',
             SendOrderPaidMail::class,
-        ]
+        ],
+        OrderReviewed::class => [
+            UpdateProductRating::class,
+        ],
     ];
 
     /**
