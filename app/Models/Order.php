@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Ramsey\Uuid\Uuid;
 class Order extends Model
 {
     const REFUND_STATUS_PENDING = 'pending';
@@ -75,6 +75,14 @@ class Order extends Model
         });
     }
 
+    public static function getAvailableRefundNo(){
+        do{
+            $no = Uuid::uuid4()->getHex();
+
+        }while(self::query()->where('refund_no',$no)->exists());
+        return $no;
+    }
+
     public function user(){
         return $this->belongsTo(User::class);
     }
@@ -93,6 +101,9 @@ class Order extends Model
 
         \Log::warning('find order on failed');
         return false;
+    }
+    public function couponCode(){
+        return $this->belongsTo(CouponCode::class);
     }
 
 
