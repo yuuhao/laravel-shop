@@ -18,6 +18,7 @@ class HomeController extends Controller
 
     /**
      * Show the application dashboard.
+     * 本次部署使用deployer的，哈哈哈，
      *
      * @return \Illuminate\Http\Response
      */
