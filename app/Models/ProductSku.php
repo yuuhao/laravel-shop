@@ -14,20 +14,22 @@ class ProductSku extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function decreaseStock($amount){
+    public function decreaseStock($amount)
+    {
 
-        if($amount < 0){
+        if ($amount < 0) {
             throw new InvalidRequestException('减库存不可小于0');
         }
 
-        return $this->newQuery()->where('id',$this->id)->where('stock','>=',$amount)->decrement('stock',$amount);
+        return $this->newQuery()->where('id', $this->id)->where('stock', '>=', $amount)->decrement('stock', $amount);
     }
 
-    public function addStock($amount){
-        if($amount < 0){
+    public function addStock($amount)
+    {
+        if ($amount < 0) {
             throw new InvalidRequestException('加库存不能小于0');
         }
 
-        $this->increment('stock',$amount);
+        $this->increment('stock', $amount);
     }
 }

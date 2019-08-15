@@ -22,11 +22,12 @@ add('writable_dirs', []);
 
 // Hosts
 
-host('192.168.10.10')
+host('47.98.165.173')
 	->user('deployer')
 	->multiplexing(false)
 	->identityFile('~/.ssh/deployerkey')
-	->set('deploy_path', '/var/www/{{application}}')
+	->set('deploy_path', '/data/wwwroot/default/{{application}}')
+        ->set('bin/php', '/usr/local/php/bin/php')
 	->set('use_relative_symlinks', false);    
     
 // Tasks
